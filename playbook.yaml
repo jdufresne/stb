@@ -1,0 +1,87 @@
+- name: Set-top Box
+  hosts: hosts
+  tasks:
+    - name: Add RPM Fusion keys
+      ansible.builtin.rpm_key:
+        key: "{{ item }}"
+      become: true
+      loop:
+        - "https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020"
+
+    - name: Add RPM Fusion repository
+      ansible.builtin.dnf:
+        name:
+          - "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
+      become: true
+
+    - name: Desktop settings
+      community.general.dconf:
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+      loop:
+        - key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-type
+          value: "'nothing'"
+        - key: /org/gnome/desktop/session/idle-delay
+          value: uint32 0
+
+    - name: Install Deluge
+      ansible.builtin.dnf:
+        name: deluge-daemon
+      become: true
+
+    - name: Start Deluge
+      ansible.builtin.systemd_service:
+        name: deluge-daemon
+        enabled: true
+        state: started
+      become: true
+
+    - name: Create Deluge directory
+      ansible.builtin.file:
+        path: /var/lib/deluge/Downloads
+        state: directory
+        owner: deluge
+        group: deluge
+      become: true
+
+    - name: Allow remote connections
+      ansible.builtin.command:
+        cmd: deluge-console config --set allow_remote true
+      become_user: deluge
+
+    - name: Restart Deluge
+      ansible.builtin.systemd_service:
+        name: deluge-daemon
+        state: restarted
+      become: true
+
+    - name: Link Deluge directory
+      ansible.builtin.file:
+        path: ~/deluge
+        src: /var/lib/deluge/Downloads
+        state: link
+
+    - name: Configure Deluge authentication
+      ansible.builtin.lineinfile:
+        path: /var/lib/deluge/.config/deluge/auth
+        regexp: "^jon:"
+        line: "jon:jon:10"
+      become: true
+
+    - name: Generate SSH keys
+      ansible.builtin.user:
+        name: "{{ ansible_facts['user_id'] }}"
+        generate_ssh_key: yes
+
+    - name: Install packages
+      ansible.builtin.dnf:
+        name: kodi
+      become: true
+
+    - name: Create Kodi directories
+      ansible.builtin.file:
+        path: "~/{{ item }}"
+        state: directory
+      loop:
+        - Movies
+        - TV Shows

@@ -1,0 +1,7 @@
+{
+  "name": "stb",
+  "private": true,
+  "devDependencies": {
+    "prettier": "3.9.8"
+  }
+}
