@@ -95,7 +95,7 @@
 
     - name: Link Deluge directory
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/deluge"
+        path: "{{ ansible_facts['env']['HOME'] }}/deluge"
         src: /var/lib/deluge/Downloads
         state: link
 
@@ -118,7 +118,7 @@
 
     - name: Create Kodi directories
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/{{ item }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
         state: directory
       loop:
         - Movies
@@ -126,11 +126,11 @@
 
     - name: Create XDG autostart directory
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.config/autostart"
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/autostart"
         state: directory
 
     - name: Configure Kodi to start automatically
       ansible.builtin.copy:
         src: /usr/share/applications/kodi.desktop
-        dest: "{{ ansible_env.HOME }}/.config/autostart/kodi.desktop"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/autostart/kodi.desktop"
         remote_src: true
