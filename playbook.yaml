@@ -1,6 +1,11 @@
 - name: Set-top Box
   hosts: hosts
   tasks:
+    - name: Install lxml
+      ansible.builtin.dnf:
+        name: python3-lxml
+      become: true
+
     - name: Add RPM Fusion keys
       ansible.builtin.rpm_key:
         key: "{{ item }}"
@@ -85,3 +90,14 @@
       loop:
         - Movies
         - TV Shows
+
+    - name: Enable Kodi web server
+      community.general.xml:
+        path: ~/.kodi/userdata/guisettings.xml
+        xpath: "/settings/setting[@id='services.webserver']"
+        value: "true"
+
+    - name: Copy Kodi sources
+      ansible.builtin.copy:
+        src: sources.xml
+        dest: ~/.kodi/userdata/sources.xml

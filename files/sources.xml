@@ -1,0 +1,24 @@
+<sources>
+  <video>
+    <source>
+      <name>Movies</name>
+      <path pathversion="1">/home/jon/Movies/</path>
+      <allowsharing>true</allowsharing>
+    </source>
+    <source>
+      <name>TV shows</name>
+      <path pathversion="1">/home/jon/TV shows/</path>
+      <allowsharing>true</allowsharing>
+    </source>
+    <source>
+      <name>deluge</name>
+      <path pathversion="1">/home/jon/deluge/</path>
+      <allowsharing>true</allowsharing>
+    </source>
+    <source>
+      <name>Downloads</name>
+      <path pathversion="1">/home/jon/Downloads/</path>
+      <allowsharing>true</allowsharing>
+    </source>
+  </video>
+</sources>
