@@ -1,5 +1,5 @@
 - name: Set-top Box
-  hosts: hosts
+  hosts: all
   tasks:
     - name: Install lxml
       ansible.builtin.dnf:
@@ -62,7 +62,7 @@
 
     - name: Link Deluge directory
       ansible.builtin.file:
-        path: ~/deluge
+        path: "{{ ansible_env.HOME }}/deluge"
         src: /var/lib/deluge/Downloads
         state: link
 
@@ -76,7 +76,7 @@
     - name: Generate SSH keys
       ansible.builtin.user:
         name: "{{ ansible_facts['user_id'] }}"
-        generate_ssh_key: yes
+        generate_ssh_key: true
 
     - name: Install packages
       ansible.builtin.dnf:
@@ -85,7 +85,7 @@
 
     - name: Create Kodi directories
       ansible.builtin.file:
-        path: "~/{{ item }}"
+        path: "{{ ansible_env.HOME }}/{{ item }}"
         state: directory
       loop:
         - Movies
@@ -93,11 +93,16 @@
 
     - name: Enable Kodi web server
       community.general.xml:
-        path: ~/.kodi/userdata/guisettings.xml
+        path: "{{ ansible_env.HOME }}/.kodi/userdata/guisettings.xml"
         xpath: "/settings/setting[@id='services.webserver']"
         value: "true"
+
+    - name: Create Kodi userdata directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kodi/userdata"
+        state: directory
 
     - name: Copy Kodi sources
       ansible.builtin.copy:
         src: sources.xml
-        dest: ~/.kodi/userdata/sources.xml
+        dest: "{{ ansible_env.HOME }}/.kodi/userdata/sources.xml"
