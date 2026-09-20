@@ -48,6 +48,7 @@
         section: daemon
         option: "{{ item.option }}"
         value: "{{ item.value }}"
+        no_extra_spaces: true
         owner: root
         group: root
         mode: "0644"
