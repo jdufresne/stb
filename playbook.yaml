@@ -104,6 +104,7 @@
       become: true
       become_user: deluge
       when: "deluge_allow_remote.stdout is not regex('^allow_remote: True$')"
+      changed_when: true
 
     - name: Restart Deluge
       ansible.builtin.systemd_service:
