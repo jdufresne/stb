@@ -25,11 +25,14 @@
       become: true
 
     - name: Configure automatic updates to download and install
-      ansible.builtin.ini_file:
+      community.general.ini_file:
         path: /etc/dnf/automatic.conf
         section: commands
         option: apply_updates
         value: "yes"
+        owner: root
+        group: root
+        mode: "0644"
       become: true
 
     - name: Enable and start automatic update timer
@@ -40,11 +43,14 @@
       become: true
 
     - name: Enable GDM automatic login
-      ansible.builtin.ini_file:
+      community.general.ini_file:
         path: /etc/gdm/custom.conf
         section: daemon
         option: "{{ item.option }}"
         value: "{{ item.value }}"
+        owner: root
+        group: root
+        mode: "0644"
       loop:
         - option: AutomaticLoginEnable
           value: "True"
@@ -80,11 +86,13 @@
         state: directory
         owner: deluge
         group: deluge
+        mode: "0755"
       become: true
 
     - name: Allow remote connections
       ansible.builtin.command:
         cmd: deluge-console config --set allow_remote true
+      become: true
       become_user: deluge
 
     - name: Restart Deluge
@@ -120,6 +128,9 @@
       ansible.builtin.file:
         path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
         state: directory
+        owner: "{{ ansible_facts['user_id'] }}"
+        group: "{{ ansible_facts['group_id'] }}"
+        mode: "0755"
       loop:
         - Movies
         - TV Shows
@@ -128,9 +139,15 @@
       ansible.builtin.file:
         path: "{{ ansible_facts['env']['HOME'] }}/.config/autostart"
         state: directory
+        owner: "{{ ansible_facts['user_id'] }}"
+        group: "{{ ansible_facts['group_id'] }}"
+        mode: "0755"
 
     - name: Configure Kodi to start automatically
       ansible.builtin.copy:
         src: /usr/share/applications/kodi.desktop
         dest: "{{ ansible_facts['env']['HOME'] }}/.config/autostart/kodi.desktop"
         remote_src: true
+        owner: "{{ ansible_facts['user_id'] }}"
+        group: "{{ ansible_facts['group_id'] }}"
+        mode: "0644"
