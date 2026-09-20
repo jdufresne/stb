@@ -39,6 +39,19 @@
         state: started
       become: true
 
+    - name: Enable GDM automatic login
+      ansible.builtin.ini_file:
+        path: /etc/gdm/custom.conf
+        section: daemon
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      loop:
+        - option: AutomaticLoginEnable
+          value: "True"
+        - option: AutomaticLogin
+          value: "{{ ansible_facts['user_id'] }}"
+      become: true
+
     - name: Desktop settings
       community.general.dconf:
         key: "{{ item.key }}"
@@ -110,3 +123,14 @@
       loop:
         - Movies
         - TV Shows
+
+    - name: Create XDG autostart directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.config/autostart"
+        state: directory
+
+    - name: Configure Kodi to start automatically
+      ansible.builtin.copy:
+        src: /usr/share/applications/kodi.desktop
+        dest: "{{ ansible_env.HOME }}/.config/autostart/kodi.desktop"
+        remote_src: true
