@@ -110,19 +110,3 @@
       loop:
         - Movies
         - TV Shows
-
-    - name: Enable Kodi web server
-      community.general.xml:
-        path: "{{ ansible_env.HOME }}/.kodi/userdata/guisettings.xml"
-        xpath: "/settings/setting[@id='services.webserver']"
-        value: "true"
-
-    - name: Create Kodi userdata directory
-      ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.kodi/userdata"
-        state: directory
-
-    - name: Copy Kodi sources
-      ansible.builtin.copy:
-        src: sources.xml
-        dest: "{{ ansible_env.HOME }}/.kodi/userdata/sources.xml"
