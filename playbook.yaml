@@ -90,11 +90,20 @@
         mode: "0755"
       become: true
 
+    - name: Check Deluge remote connection setting
+      ansible.builtin.command:
+        cmd: deluge-console config allow_remote
+      become: true
+      become_user: deluge
+      register: deluge_allow_remote
+      changed_when: false
+
     - name: Allow remote connections
       ansible.builtin.command:
         cmd: deluge-console config --set allow_remote true
       become: true
       become_user: deluge
+      when: "deluge_allow_remote.stdout is not regex('^allow_remote: True$')"
 
     - name: Restart Deluge
       ansible.builtin.systemd_service:
