@@ -19,6 +19,26 @@
           - "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
       become: true
 
+    - name: Install dnf-automatic
+      ansible.builtin.dnf:
+        name: dnf-automatic
+      become: true
+
+    - name: Configure automatic updates to download and install
+      ansible.builtin.ini_file:
+        path: /etc/dnf/automatic.conf
+        section: commands
+        option: apply_updates
+        value: "yes"
+      become: true
+
+    - name: Enable and start automatic update timer
+      ansible.builtin.systemd:
+        name: dnf-automatic.timer
+        enabled: true
+        state: started
+      become: true
+
     - name: Desktop settings
       community.general.dconf:
         key: "{{ item.key }}"
